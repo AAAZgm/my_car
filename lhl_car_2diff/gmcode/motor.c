@@ -16,8 +16,8 @@ void L_PID_Init(void)
     L_AddPID.Error = 0.0;
     L_AddPID.LastError = 0.0;
     L_AddPID.integral = 0.0;
-    L_AddPID.Kp = 0.5;
-    L_AddPID.Ki = 0.1;
+    L_AddPID.Kp = 1;
+    L_AddPID.Ki = 0.5;
     L_AddPID.Kd = 0; 
  
 }
@@ -28,8 +28,8 @@ void R_PID_Init(void)
     R_AddPID.Error = 0.0;
     R_AddPID.LastError = 0.0;
     R_AddPID.integral = 0.0;//增量式不用
-    R_AddPID.Kp = 0.5;
-    R_AddPID.Ki = 0.1;
+    R_AddPID.Kp = 1;
+    R_AddPID.Ki = 0.5;
     R_AddPID.Kd = 0; 
  
 }
@@ -69,12 +69,12 @@ HAL_TIM_Encoder_Start(&htim5,TIM_CHANNEL_ALL);
 //Set_PID_TargetSpeed(0,2);	
  }
  
- //正常使用 target：目标转速比例（0~1000对应0~320rpm，负数为反转
+
  void Set_PID_TargetSpeed( float target,uint8_t which) 
 {
     // 限制目标值范围（根据编码器实际量程，如0~100脉冲/50ms）
-    if (target < Min_Pid_Value) target = Min_Pid_Value;
-    if (target > Max_Pid_Value) target = Max_Pid_Value;
+    if (target < Min_PWM_Value) target = Min_PWM_Value;
+    if (target > Max_PWM_Value) target = Max_PWM_Value;
 
     // 根据电机编号设置目标值
     if (which == 1) {
@@ -211,7 +211,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		R_Output_Val=(int16_t)addPID_realize(&R_AddPID,R_Encoder_Speed);
 		L_Output_Val=(int16_t)addPID_realize(&L_AddPID,L_Encoder_Speed);
 //serial_printf("%d",while_Command_GetCommand(now_command));
-	  set_v(L_Output_Val,1);//注意这里和pwm是独立的，pid只是控制转数
+	  set_v(L_Output_Val,1);
 	  set_v(R_Output_Val,2);
 
     //  设置测量频率为20Hz(50ms)
